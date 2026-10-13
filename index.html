@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#8b4513">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Рецепты">
+<meta name="mobile-web-app-capable" content="yes">
+<title>📖 Моя книга рецептов</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📖</text></svg>">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:linear-gradient(135deg,#f5f0e8 0%,#e8dcc8 100%);min-height:100vh;color:#3a2e1f;padding:20px;padding-top:calc(20px + env(safe-area-inset-top));padding-bottom:calc(20px + env(safe-area-inset-bottom));overscroll-behavior-y:contain}
+header{text-align:center;margin-bottom:20px}
+header h1{font-size:2.5em;color:#8b4513;text-shadow:2px 2px 4px rgba(0,0,0,0.1)}
+header p{color:#7a6a55;margin-top:8px}
+.container{max-width:1200px;margin:0 auto}
+.form-card{background:#fffdf8;border-radius:16px;padding:25px;box-shadow:0 6px 20px rgba(139,69,19,0.15);margin-bottom:30px;border:2px solid #e0d0b8}
+.form-card h2{color:#8b4513;margin-bottom:15px;font-size:1.4em}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:15px}
+.form-group{display:flex;flex-direction:column}
+.form-group label{font-weight:600;margin-bottom:5px;font-size:0.9em;color:#6b5a45}
+.form-group input,.form-group select,.form-group textarea{padding:10px;border:1.5px solid #d8c8b0;border-radius:8px;font-size:16px;font-family:inherit;background:#fff;transition:border 0.2s}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:#c19a6b;box-shadow:0 0 0 3px rgba(193,154,107,0.2)}
+.form-group textarea{resize:vertical;min-height:70px}
+.full-width{grid-column:1/-1}
+.stars-input{display:flex;gap:4px;font-size:1.8em;cursor:pointer}
+.stars-input span{color:#ddd;transition:color 0.15s;user-select:none}
+.stars-input span.active{color:#f4b400}
+.btn{padding:12px 24px;border:none;border-radius:10px;font-size:1em;font-weight:600;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s}
+.btn-primary{background:linear-gradient(135deg,#d2691e,#8b4513);color:white;margin-top:15px;width:100%;font-size:1.05em}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 6px 15px rgba(139,69,19,0.3)}
+.top-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:15px}
+.search-box{flex:1;min-width:200px;position:relative}
+.search-box input{width:100%;padding:11px 15px 11px 40px;border:2px solid #c19a6b;border-radius:22px;font-size:16px;background:#fffdf8;color:#3a2e1f;font-family:inherit}
+.search-box input:focus{outline:none;border-color:#8b4513;box-shadow:0 0 0 3px rgba(139,69,19,0.15)}
+.search-box::before{content:'🔍';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:1em;pointer-events:none}
+.counter{background:#fffdf8;border:2px solid #c19a6b;border-radius:22px;padding:9px 16px;font-weight:600;color:#8b4513;font-size:0.92em;white-space:nowrap}
+.filters{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:15px;justify-content:center}
+.filter-btn{padding:8px 18px;border-radius:20px;border:2px solid #c19a6b;background:#fffdf8;color:#8b4513;cursor:pointer;font-weight:600;transition:all 0.2s}
+.filter-btn:hover{background:#f0e5d0}
+.filter-btn.active{background:#8b4513;color:white;border-color:#8b4513}
+.fav-filter{display:flex;justify-content:center;margin-bottom:20px}
+.fav-toggle{padding:8px 20px;border-radius:20px;border:2px solid #e8b4b8;background:#fffdf8;color:#c0392b;cursor:pointer;font-weight:600;transition:all 0.2s;font-size:0.92em}
+.fav-toggle:hover{background:#fdeaea}
+.fav-toggle.active{background:#c0392b;color:white;border-color:#c0392b}
+.recipes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+.recipe-card{background:#fffdf8;border-radius:14px;overflow:hidden;box-shadow:0 4px 15px rgba(139,69,19,0.12);border:1.5px solid #e0d0b8;transition:transform 0.2s,box-shadow 0.2s;display:flex;flex-direction:column;position:relative}
+.recipe-card:hover{transform:translateY(-4px);box-shadow:0 8px 25px rgba(139,69,19,0.2)}
+.fav-btn{position:absolute;top:12px;right:12px;background:rgba(255,253,248,0.92);border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:1.3em;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,0.15);transition:transform 0.15s,background 0.2s;z-index:2}
+.fav-btn:hover{transform:scale(1.1);background:#fff}
+.fav-btn.active{background:#fff}
+.recipe-img{width:100%;height:200px;object-fit:cover;background:#e8dcc8;display:block}
+.recipe-body{padding:18px;flex:1;display:flex;flex-direction:column}
+.recipe-title{font-size:1.25em;color:#6b3410;margin-bottom:8px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.recipe-title:hover{color:#8b4513}
+.toggle-icon{font-size:0.7em;color:#8b4513;transition:transform 0.3s;flex-shrink:0}
+.recipe-card.expanded .toggle-icon{transform:rotate(180deg)}
+.category-tag{display:inline-block;background:#f0e5d0;color:#8b4513;padding:3px 12px;border-radius:12px;font-size:0.8em;font-weight:600;margin-bottom:10px}
+.recipe-meta{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:12px;font-size:0.9em;color:#6b5a45}
+.recipe-meta span{display:flex;align-items:center;gap:4px}
+.stars-display{color:#f4b400;font-size:1.1em}
+.recipe-details{overflow:hidden;max-height:0;transition:max-height 0.4s ease,opacity 0.3s;opacity:0}
+.recipe-card.expanded .recipe-details{max-height:3000px;opacity:1;margin-top:10px}
+.recipe-section{margin-bottom:12px}
+.recipe-section h4{font-size:0.85em;text-transform:uppercase;color:#8b4513;letter-spacing:0.5px;margin-bottom:5px}
+.recipe-section p,.recipe-section ul{font-size:0.92em;line-height:1.5;color:#4a3e2f;white-space:pre-wrap}
+.shopping-list{background:#faf5ea;border-radius:10px;padding:12px;border:1.5px dashed #c19a6b;margin-bottom:10px}
+.shopping-list h4{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.clear-checked{background:none;border:none;color:#b23a1f;font-size:0.75em;cursor:pointer;font-weight:600;text-decoration:underline;padding:0}
+.shopping-item{display:flex;align-items:center;gap:8px;padding:5px 0;font-size:0.92em;cursor:pointer;user-select:none;color:#4a3e2f}
+.shopping-item input{width:17px;height:17px;cursor:pointer;accent-color:#8b4513;flex-shrink:0}
+.shopping-item.checked span{text-decoration:line-through;color:#a89880}
+.card-actions{display:flex;gap:8px;margin-top:auto;padding-top:10px;justify-content:flex-end}
+.delete-btn{background:#f5e5e0;color:#b23a1f;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.85em;font-weight:600;transition:background 0.2s}
+.delete-btn:hover{background:#eccbc1}
+.empty{text-align:center;padding:60px 20px;color:#8b7a65;font-size:1.15em}
+.empty span{font-size:3em;display:block;margin-bottom:15px}
+#draftStatus{font-size:0.85em;color:#8b4513;text-align:right;margin-top:5px;height:18px}
+.toast{position:fixed;bottom:20px;bottom:calc(20px + env(safe-area-inset-bottom));left:50%;transform:translateX(-50%) translateY(150%);background:#3a2e1f;color:#fffdf8;padding:14px 20px;border-radius:12px;box-shadow:0 8px 25px rgba(0,0,0,0.3);display:flex;align-items:center;gap:15px;font-size:0.95em;z-index:1000;transition:transform 0.3s ease;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast button{background:#f4b400;color:#3a2e1f;border:none;padding:7px 16px;border-radius:8px;font-weight:700;cursor:pointer;font-size:0.9em;transition:background 0.2s;white-space:nowrap}
+.toast button:hover{background:#ffc933}
+@media (max-width:600px){header h1{font-size:1.8em}body{padding:12px;padding-top:calc(12px + env(safe-area-inset-top))}}
+</style>
+</head>
+<body>
+<div class="container">
+<header><h1>📖 Моя книга рецептов</h1><p>Сохраняй, готовь и наслаждайся ✨</p></header>
+<div class="form-card">
+<h2>➕ Добавить рецепт</h2>
+<form id="recipeForm" autocomplete="off">
+<div class="form-grid">
+<div class="form-group full-width"><label>Название рецепта</label><input type="text" id="title" required placeholder="Например, Борщ"></div>
+<div class="form-group"><label>Категория</label><select id="category" required><option value="">Выберите...</option><option>Первое блюдо</option><option>Второе блюдо</option><option>Коктейли</option><option>Салаты</option><option>Торты</option><option>Десерты</option></select></div>
+<div class="form-group"><label>Где готовить</label><select id="where" required><option value="">Выберите...</option><option>Духовка</option><option>Сковорода</option><option>Кастрюля</option><option>Без нагрева</option><option>Мультиварка</option><option>Гриль</option></select></div>
+<div class="form-group"><label>Время приготовления</label><input type="text" id="time" required placeholder="Например, 1 ч 30 мин"></div>
+<div class="form-group"><label>На сколько человек</label><input type="text" id="servings" required placeholder="Например, 4 порции"></div>
+<div class="form-group"><label>Сложность (нажми на звёзды)</label><div class="stars-input" id="starsInput"><span data-value="1">★</span><span data-value="2">★</span><span data-value="3">★</span><span data-value="4">★</span><span data-value="5">★</span></div></div>
+<div class="form-group full-width"><label>Картинка (URL или загрузите файл)</label><input type="text" id="imageUrl" placeholder="https://..."><input type="file" id="imageFile" accept="image/*" style="margin-top:8px;padding:5px;"></div>
+<div class="form-group full-width"><label>Ингредиенты (каждый с новой строки)</label><textarea id="ingredients" required placeholder="Мясо — 500 г&#10;Картофель — 4 шт&#10;Соль — по вкусу"></textarea></div>
+<div class="form-group full-width"><label>Способ приготовления</label><textarea id="method" required placeholder="1. Нарезать...&#10;2. Обжарить..." style="min-height:110px;"></textarea></div>
+</div>
+<button type="submit" class="btn btn-primary">💾 Сохранить рецепт</button>
+<div id="draftStatus"></div>
+</form>
+</div>
+<div class="top-bar">
+<div class="search-box"><input type="text" id="searchInput" placeholder="Поиск по названию..."></div>
+<div class="counter" id="counter">Всего: 0</div>
+</div>
+<div class="filters" id="filters">
+<button class="filter-btn active" data-cat="Все">Все</button>
+<button class="filter-btn" data-cat="Первое блюдо">🥣 Первое блюдо</button>
+<button class="filter-btn" data-cat="Второе блюдо">🍲 Второе блюдо</button>
+<button class="filter-btn" data-cat="Коктейли">🍹 Коктейли</button>
+<button class="filter-btn" data-cat="Салаты">🥗 Салаты</button>
+<button class="filter-btn" data-cat="Торты">🎂 Торты</button>
+<button class="filter-btn" data-cat="Десерты">🍰 Десерты</button>
+</div>
+<div class="fav-filter"><button class="fav-toggle" id="favToggle">❤️ Только избранное</button></div>
+<div id="recipesContainer"></div>
+</div>
+<div class="toast" id="toast"><span id="toastText">Рецепт удалён</span><button id="undoBtn">↩ Отменить</button></div>
+<script>
+const STORAGE_KEY='myRecipeBook';
+let recipes=JSON.parse(localStorage.getItem(STORAGE_KEY))||[];
+let currentFilter='Все';
+let currentStars=0;
+let uploadedImage='';
+let pendingDelete=null;
+let toastTimer=null;
+let searchQuery='';
+let onlyFavorites=false;
+let expandedIds=new Set();
+const starsInput=document.getElementById('starsInput');
+starsInput.querySelectorAll('span').forEach(star=>{
+star.addEventListener('click',()=>{currentStars=parseInt(star.dataset.value);updateStars();});
+star.addEventListener('mouseenter',()=>{const val=parseInt(star.dataset.value);starsInput.querySelectorAll('span').forEach(s=>{s.classList.toggle('active',parseInt(s.dataset.value)<=val);});});
+});
+starsInput.addEventListener('mouseleave',updateStars);
+function updateStars(){starsInput.querySelectorAll('span').forEach(s=>{s.classList.toggle('active',parseInt(s.dataset.value)<=currentStars);});}
+document.getElementById('imageFile').addEventListener('change',(e)=>{
+const file=e.target.files[0];
+if(file){const reader=new FileReader();reader.onload=(ev)=>{uploadedImage=ev.target.result;};reader.readAsDataURL(file);}
+});
+const form=document.getElementById('recipeForm');
+let saveTimeout;
+form.addEventListener('input',()=>{
+clearTimeout(saveTimeout);
+saveTimeout=setTimeout(()=>{
+const draft={title:document.getElementById('title').value,category:document.getElementById('category').value,where:document.getElementById('where').value,time:document.getElementById('time').value,servings:document.getElementById('servings').value,stars:currentStars,imageUrl:document.getElementById('imageUrl').value,ingredients:document.getElementById('ingredients').value,method:document.getElementById('method').value};
+if(draft.title||draft.ingredients||draft.method){
+localStorage.setItem('recipeDraft',JSON.stringify(draft));
+const status=document.getElementById('draftStatus');
+status.textContent='💾 Черновик сохранён';
+setTimeout(()=>{if(status.textContent==='💾 Черновик сохранён')status.textContent='';},2000);
+}
+},500);
+});
+window.addEventListener('load',()=>{
+const draft=JSON.parse(localStorage.getItem('recipeDraft'));
+if(draft){
+document.getElementById('title').value=draft.title||'';
+document.getElementById('category').value=draft.category||'';
+document.getElementById('where').value=draft.where||'';
+document.getElementById('time').value=draft.time||'';
+document.getElementById('servings').value=draft.servings||'';
+document.getElementById('imageUrl').value=draft.imageUrl||'';
+document.getElementById('ingredients').value=draft.ingredients||'';
+document.getElementById('method').value=draft.method||'';
+if(draft.stars){currentStars=draft.stars;updateStars();}
+}
+});
+document.getElementById('recipeForm').addEventListener('submit',(e)=>{
+e.preventDefault();
+const urlImg=document.getElementById('imageUrl').value.trim();
+const recipe={id:Date.now(),title:document.getElementById('title').value.trim(),category:document.getElementById('category').value,where:document.getElementById('where').value,time:document.getElementById('time').value.trim(),servings:document.getElementById('servings').value.trim(),stars:currentStars||0,image:uploadedImage||urlImg||'',ingredients:document.getElementById('ingredients').value.trim(),method:document.getElementById('method').value.trim(),favorite:false};
+recipes.push(recipe);
+saveAndRender();
+e.target.reset();
+currentStars=0;
+uploadedImage='';
+updateStars();
+localStorage.removeItem('recipeDraft');
+document.getElementById('draftStatus').textContent='';
+});
+function saveAndRender(){localStorage.setItem(STORAGE_KEY,JSON.stringify(recipes));render();}
+function toggleFavorite(id){const r=recipes.find(x=>x.id===id);if(r){r.favorite=!r.favorite;saveAndRender();}}
+function toggleExpand(id){if(expandedIds.has(id)){expandedIds.delete(id);}else{expandedIds.add(id);}render();}
+function toggleShoppingItem(recipeId,itemIndex){const r=recipes.find(x=>x.id===recipeId);if(!r)return;if(!r.checked){r.checked={};}r.checked[itemIndex]=!r.checked[itemIndex];saveAndRender();}
+function clearChecked(recipeId){const r=recipes.find(x=>x.id===recipeId);if(r){r.checked={};saveAndRender();}}
+function deleteRecipe(id){const idx=recipes.findIndex(r=>r.id===id);if(idx===-1)return;pendingDelete={recipe:recipes[idx],index:idx};recipes.splice(idx,1);expandedIds.delete(id);saveAndRender();showToast();}
+function showToast(){const toast=document.getElementById('toast');toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>{toast.classList.remove('show');pendingDelete=null;},5000);}
+document.getElementById('undoBtn').addEventListener('click',()=>{if(pendingDelete){recipes.splice(pendingDelete.index,0,pendingDelete.recipe);pendingDelete=null;saveAndRender();}const toast=document.getElementById('toast');toast.classList.remove('show');clearTimeout(toastTimer);});
+function render(){
+const container=document.getElementById('recipesContainer');
+let filtered=currentFilter==='Все'?[...recipes]:recipes.filter(r=>r.category===currentFilter);
+if(onlyFavorites){filtered=filtered.filter(r=>r.favorite);}
+if(searchQuery.trim()){const q=searchQuery.trim().toLowerCase();filtered=filtered.filter(r=>r.title.toLowerCase().includes(q));}
+filtered.sort((a,b)=>a.title.localeCompare(b.title,'ru'));
+document.getElementById('counter').textContent='Всего: '+filtered.length+(filtered.length!==recipes.length?' из '+recipes.length:'');
+if(filtered.length===0){container.innerHTML=`<div class="empty"><span>🍽️</span>Ничего не найдено.<br>Попробуйте изменить фильтры или добавьте рецепт!</div>`;return;}
+container.innerHTML=`<div class="recipes-grid">`+filtered.map(r=>{
+const isExpanded=expandedIds.has(r.id);
+const checked=r.checked||{};
+const items=r.ingredients.split('\n').filter(x=>x.trim());
+return `
+<div class="recipe-card${isExpanded?' expanded':''}">
+<button class="fav-btn${r.favorite?' active':''}" onclick="event.stopPropagation();toggleFavorite(${r.id})" title="В избранное">${r.favorite?'❤️':'🤍'}</button>
+${r.image?`<img class="recipe-img" src="${r.image}" alt="${escapeHtml(r.title)}" onerror="this.style.display='none'">`:''}
+<div class="recipe-body">
+<div class="category-tag">${escapeHtml(r.category)}</div>
+<div class="recipe-title" onclick="toggleExpand(${r.id})"><span>${escapeHtml(r.title)}</span><span class="toggle-icon">▼</span></div>
+<div class="recipe-meta"><span>⏱️ ${escapeHtml(r.time)}</span><span>👥 ${escapeHtml(r.servings)}</span><span>🔥 ${escapeHtml(r.where)}</span></div>
+<div class="stars-display">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+<div class="recipe-details">
+<div class="recipe-section shopping-list">
+<h4>🛒 Список покупок<button class="clear-checked" onclick="clearChecked(${r.id})">Сбросить</button></h4>
+${items.map((item,i)=>`<label class="shopping-item${checked[i]?' checked':''}"><input type="checkbox" ${checked[i]?'checked':''} onchange="toggleShoppingItem(${r.id},${i})"><span>${escapeHtml(item)}</span></label>`).join('')}
+</div>
+<div class="recipe-section"><h4>📝 Способ приготовления</h4><p>${escapeHtml(r.method)}</p></div>
+</div>
+<div class="card-actions"><button class="delete-btn" onclick="event.stopPropagation();deleteRecipe(${r.id})">🗑 Удалить</button></div>
+</div>
+</div>`;
+}).join('')+`</div>`;
+}
+function escapeHtml(text){const div=document.createElement('div');div.textContent=text;return div.innerHTML;}
+document.getElementById('filters').addEventListener('click',(e)=>{if(e.target.classList.contains('filter-btn')){document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');currentFilter=e.target.dataset.cat;render();}});
+document.getElementById('favToggle').addEventListener('click',()=>{onlyFavorites=!onlyFavorites;document.getElementById('favToggle').classList.toggle('active',onlyFavorites);render();});
+document.getElementById('searchInput').addEventListener('input',(e)=>{searchQuery=e.target.value;render();});
+render();
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});}
+</script>
+</body>
+</html>
